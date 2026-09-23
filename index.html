@@ -416,6 +416,20 @@
     display:block;
     background:#fff;
   }
+  .outputCode{
+    width:100%;
+    height:100%;
+    border:none;
+    outline:none;
+    resize:none;
+    margin:0;
+    display:block;
+    font-family:Consolas,'Courier New',monospace;
+    font-size:14px;
+    padding:12px;
+    background:var(--panel);
+    color:var(--text);
+  }
   .emptyState{
     position:absolute;
     inset:0;
@@ -647,6 +661,7 @@
           <p>Start typing or pasting HTML on the left.</p>
         </div>
         <iframe id="previewFrame" title="HTML preview" sandbox="allow-scripts allow-forms allow-popups allow-modals" hidden></iframe>
+        <textarea id="outputCode" class="outputCode" readonly spellcheck="false" hidden></textarea>
       </div>
     </div>
   </div>
@@ -715,6 +730,7 @@
   var elErr = document.getElementById('errBanner');
   var elFrame = document.getElementById('previewFrame');
   var elEmptyState = document.getElementById('emptyState');
+  var elOutputCode = document.getElementById('outputCode');
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"]/g, function(c){
@@ -844,29 +860,30 @@
   });
   var elIndentSize = document.getElementById('indentSize');
   document.getElementById('btnFormat').addEventListener('click', function(){
+    if (!elInput.value.trim()){ setError('Nothing to beautify - paste some HTML first.'); return; }
     try{
       if (typeof html_beautify !== 'function'){ setError('Formatter did not load - try again in a moment.'); return; }
       var sizeVal = elIndentSize.value;
       var opts = { wrap_line_length: 0 };
       if (sizeVal === 'tab'){ opts.indent_with_tabs = true; opts.indent_size = 1; }
       else { opts.indent_size = parseInt(sizeVal, 10) || 2; }
-      elInput.value = html_beautify(elInput.value, opts);
       setError(null);
-      renderPreview();
+      showOutputText(html_beautify(elInput.value, opts));
     }catch(e){ setError('Could not format that HTML - ' + e.message); }
   });
   document.getElementById('btnRun').addEventListener('click', function(){
     renderPreview();
   });
   document.getElementById('btnMinify').addEventListener('click', function(){
+    if (!elInput.value.trim()){ setError('Nothing to minify - paste some HTML first.'); return; }
     try{
-      elInput.value = elInput.value
+      var minified = elInput.value
         .replace(/<!--[\s\S]*?-->/g, '')
         .replace(/>\s+</g, '><')
         .replace(/\s{2,}/g, ' ')
         .trim();
       setError(null);
-      renderPreview();
+      showOutputText(minified);
     }catch(e){ setError('Could not minify that HTML - ' + e.message); }
   });
   document.getElementById('btnClear').addEventListener('click', function(){
@@ -1080,18 +1097,33 @@
     });
   })();
 
-  // ---------- preview ----------
+  // ---------- preview / output ----------
+  // The right panel shows one of three things at a time: the empty-state
+  // hint, the live rendered iframe (Run/View + live typing), or a read-only
+  // text view of the last Beautify/Minify result. The left textarea always
+  // keeps the raw HTML exactly as typed/pasted - nothing ever rewrites it.
+  function showEmpty(){
+    elFrame.hidden = true;
+    elOutputCode.hidden = true;
+    elEmptyState.style.display = 'flex';
+    elFrame.removeAttribute('srcdoc');
+  }
+
   function renderPreview(){
     var text = elInput.value;
-    if (!text.trim()){
-      elFrame.hidden = true;
-      elEmptyState.style.display = 'flex';
-      elFrame.removeAttribute('srcdoc');
-      return;
-    }
+    if (!text.trim()){ showEmpty(); return; }
     elEmptyState.style.display = 'none';
+    elOutputCode.hidden = true;
     elFrame.hidden = false;
     elFrame.srcdoc = text;
+  }
+
+  function showOutputText(text){
+    elEmptyState.style.display = 'none';
+    elFrame.hidden = true;
+    elFrame.removeAttribute('srcdoc');
+    elOutputCode.hidden = false;
+    elOutputCode.value = text;
   }
 
   // Live-updates the preview as the user types, debounced so a fast typist
