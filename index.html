@@ -152,23 +152,16 @@
     background:var(--tab-inactive);
     flex:none;
   }
-  .tab{
+  .titleTab{
     padding:9px 20px;
     font-size:14px;
     font-weight:bold;
-    color:var(--tab-text);
-    cursor:pointer;
-    border-right:1px solid var(--border);
-    background:var(--tab-inactive);
-    user-select:none;
-  }
-  .tab.active{
+    color:var(--text);
     background:var(--tab-active);
     border-bottom:1px solid var(--tab-active);
     margin-bottom:-1px;
-    color:var(--text);
+    user-select:none;
   }
-  .tab:hover:not(.active){background:var(--tab-hover);}
 
   .themeReset{
     display:flex;
@@ -226,8 +219,51 @@
   .toolbar .sep{display:none;}
   .toolbar .right{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
 
-  #textPanel{display:none;flex-direction:column;flex:1;min-height:0;}
-  #textPanel.active{display:flex;}
+  .split{
+    display:flex;
+    align-items:stretch;
+    flex:1;
+    min-height:0;
+  }
+  @media (max-width:820px){
+    .split{flex-direction:column;}
+  }
+
+  .editorWrap{
+    flex:1 1 50%;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    border-right:1px solid var(--border);
+  }
+  @media (max-width:820px){
+    .editorWrap{max-height:50vh;border-right:none;border-bottom:1px solid var(--border);}
+  }
+
+  .colResizer{
+    flex:none;
+    width:6px;
+    margin-right:-3px;
+    cursor:col-resize;
+    background:transparent;
+    position:relative;
+    z-index:1;
+  }
+  .colResizer::after{
+    content:'';
+    position:absolute;
+    left:2px;
+    top:0;
+    bottom:0;
+    width:2px;
+    background:var(--border);
+  }
+  .colResizer:hover::after, .colResizer.dragging::after{
+    background:var(--link);
+  }
+  @media (max-width:820px){
+    .colResizer{display:none;}
+  }
 
   textarea{
     width:100%;
@@ -256,11 +292,9 @@
   .err.show{display:block;}
   .err.info{background:var(--err-info-bg);color:var(--link);border-top-color:var(--err-info-border);}
 
-  .viewer{display:none;}
-  .viewer.active{display:flex;flex-direction:column;flex:1;min-height:0;}
-
   .previewWrap{
-    flex:1;
+    flex:1 1 50%;
+    min-width:0;
     min-height:0;
     position:relative;
     background:#fff;
@@ -455,31 +489,31 @@
 <div class="wrap">
   <div class="app">
     <div class="tabs">
-      <div class="tab" id="tabViewerBtn">Viewer</div>
-      <div class="tab active" id="tabTextBtn">Text</div>
+      <div class="titleTab">HTML Viewer</div>
       <span class="themeReset" id="themeReset" title="Reset to automatic (follow local time)">&#8635;</span>
       <div class="themeToggle" id="themeToggle" title="Toggle dark mode"><span id="themeIcon">&#9789;</span></div>
     </div>
 
-    <div id="textPanel" class="active">
-      <div class="toolbar">
-        <a id="btnPaste">Paste</a><span class="sep">|</span>
-        <a id="btnCopy">Copy</a><span class="sep">|</span>
-        <a id="btnFormat">Format</a><span class="sep">|</span>
-        <a id="btnMinify">Remove white space</a><span class="sep">|</span>
-        <a id="btnClear">Clear</a><span class="sep">|</span>
-        <a id="btnLoad">Load HTML data</a>
-        <span class="right">your code is not saved anywhere<span class="sep">|</span><a id="btnAbout">About</a></span>
-      </div>
-      <textarea id="input" spellcheck="false" placeholder="Paste the HTML code here (your code is not saved anywhere)"></textarea>
-      <div class="err" id="errBanner"></div>
+    <div class="toolbar">
+      <a id="btnPaste">Paste</a><span class="sep">|</span>
+      <a id="btnCopy">Copy</a><span class="sep">|</span>
+      <a id="btnFormat">Format</a><span class="sep">|</span>
+      <a id="btnMinify">Remove white space</a><span class="sep">|</span>
+      <a id="btnClear">Clear</a><span class="sep">|</span>
+      <a id="btnLoad">Load HTML data</a>
+      <span class="right">your code is not saved anywhere<span class="sep">|</span><a id="btnAbout">About</a></span>
     </div>
 
-    <div id="viewerPanel" class="viewer">
+    <div class="split">
+      <div class="editorWrap">
+        <textarea id="input" spellcheck="false" placeholder="Paste the HTML code here (your code is not saved anywhere)"></textarea>
+        <div class="err" id="errBanner"></div>
+      </div>
+      <div class="colResizer" id="colResizer" title="Drag to resize"></div>
       <div class="previewWrap" id="previewWrap">
         <div class="emptyState" id="emptyState">
           <p>Nothing to preview yet.</p>
-          <p>Paste some HTML on the <a id="emptyStateTextLink">Text</a> tab first.</p>
+          <p>Start typing or pasting HTML on the left.</p>
         </div>
         <iframe id="previewFrame" title="HTML preview" sandbox="allow-scripts allow-forms allow-popups allow-modals" hidden></iframe>
       </div>
@@ -546,34 +580,10 @@
 (function(){
   "use strict";
 
-  var SAMPLE = [
-    '<!DOCTYPE html>',
-    '<html>',
-    '<head>',
-    '  <title>Demo Page</title>',
-    '  <style>',
-    '    body { font-family: sans-serif; text-align: center; padding: 40px; }',
-    '    h1 { color: #2f6fed; }',
-    '    button { padding: 8px 16px; font-size: 14px; cursor: pointer; }',
-    '  </style>',
-    '</head>',
-    '<body>',
-    '  <h1>Hello from HTML Viewer</h1>',
-    '  <p>Edit this code on the Text tab, then switch to Viewer to see it rendered live.</p>',
-    '  <button onclick="alert(\'Scripts run too, safely sandboxed.\')">Click me</button>',
-    '</body>',
-    '</html>'
-  ].join('\n');
-
   var elInput = document.getElementById('input');
   var elErr = document.getElementById('errBanner');
   var elFrame = document.getElementById('previewFrame');
   var elEmptyState = document.getElementById('emptyState');
-
-  var tabViewerBtn = document.getElementById('tabViewerBtn');
-  var tabTextBtn = document.getElementById('tabTextBtn');
-  var textPanel = document.getElementById('textPanel');
-  var viewerPanel = document.getElementById('viewerPanel');
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"]/g, function(c){
@@ -657,23 +667,32 @@
     });
   })();
 
-  // ---------- tab switching ----------
-  function showTab(which){
-    if (which === 'viewer'){
-      tabViewerBtn.classList.add('active');
-      tabTextBtn.classList.remove('active');
-      viewerPanel.classList.add('active');
-      textPanel.classList.remove('active');
-      renderPreview();
-    } else {
-      tabTextBtn.classList.add('active');
-      tabViewerBtn.classList.remove('active');
-      textPanel.classList.add('active');
-      viewerPanel.classList.remove('active');
+  // ---------- panel resize ----------
+  (function(){
+    var resizer = document.getElementById('colResizer');
+    var editorWrap = document.querySelector('.editorWrap');
+    var startX, startWidth;
+
+    function onMove(ev){
+      var dx = ev.clientX - startX;
+      var newWidth = startWidth + dx;
+      newWidth = Math.max(200, Math.min(newWidth, window.innerWidth - 240));
+      editorWrap.style.flexBasis = newWidth + 'px';
     }
-  }
-  tabViewerBtn.addEventListener('click', function(){ showTab('viewer'); });
-  tabTextBtn.addEventListener('click', function(){ showTab('text'); });
+    function onUp(){
+      resizer.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    resizer.addEventListener('mousedown', function(ev){
+      ev.preventDefault();
+      startX = ev.clientX;
+      startWidth = editorWrap.getBoundingClientRect().width;
+      resizer.classList.add('dragging');
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  })();
 
   // ---------- text toolbar ----------
   document.getElementById('btnPaste').addEventListener('click', function(){
@@ -681,6 +700,7 @@
     if (navigator.clipboard && navigator.clipboard.readText){
       navigator.clipboard.readText().then(function(t){
         elInput.value = t;
+        renderPreview();
       }, function(){
         showPasteHint();
       });
@@ -696,6 +716,7 @@
       if (typeof html_beautify !== 'function'){ setError('Formatter did not load - try again in a moment.'); return; }
       elInput.value = html_beautify(elInput.value, { indent_size: 2, wrap_line_length: 0 });
       setError(null);
+      renderPreview();
     }catch(e){ setError('Could not format that HTML - ' + e.message); }
   });
   document.getElementById('btnMinify').addEventListener('click', function(){
@@ -706,10 +727,11 @@
         .replace(/\s{2,}/g, ' ')
         .trim();
       setError(null);
+      renderPreview();
     }catch(e){ setError('Could not minify that HTML - ' + e.message); }
   });
   document.getElementById('btnClear').addEventListener('click', function(){
-    elInput.value=''; setError(null); elInput.focus();
+    elInput.value=''; setError(null); elInput.focus(); renderPreview();
   });
 
   // ---------- load-from-URL modal ----------
@@ -752,7 +774,7 @@
         .then(function(text){
           elInput.value = text;
           closeModal();
-          showTab('viewer');
+          renderPreview();
         })
         .catch(function(err){
           showModalErr('Could not load that URL - ' + err.message + '. Many servers block cross-origin requests from a page like this.');
@@ -848,10 +870,14 @@
     elFrame.srcdoc = text;
   }
 
-  var link = document.getElementById('emptyStateTextLink');
-  if (link) link.addEventListener('click', function(){ showTab('text'); elInput.focus(); });
+  // Live-updates the preview as the user types, debounced so a fast typist
+  // doesn't reload the iframe on every keystroke.
+  var inputDebounce;
+  elInput.addEventListener('input', function(){
+    clearTimeout(inputDebounce);
+    inputDebounce = setTimeout(renderPreview, 300);
+  });
 
-  // Starts empty on the Text tab; the preview only renders once the user
-  // actually switches to the Viewer tab (see showTab) or pastes HTML.
+  renderPreview();
 })();
 </script>
