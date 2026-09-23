@@ -1234,8 +1234,10 @@
 
   // ---------- download ----------
   document.getElementById('btnSave').addEventListener('click', function(){
+    var content = elOutputCodeArea.hidden ? elInput.value : elOutputCode.value;
+    if (!content.trim()){ setError('Nothing to download - run Beautify, Minify or View first.'); return; }
     try{
-      var blob = new Blob([elInput.value], { type: 'text/html' });
+      var blob = new Blob([content], { type: 'text/html' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
