@@ -245,7 +245,21 @@
     font-weight:bold;
     letter-spacing:.02em;
   }
-  .panelHeaderIcon{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:#9fb0c9;}
+  .panelHeaderIcon{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:#9fb0c9;}
+  .panelHeaderLeadIcon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:30px;
+    height:30px;
+    border-radius:4px;
+    color:#c3ccdb;
+    cursor:pointer;
+    text-decoration:none;
+    flex:none;
+  }
+  .panelHeaderLeadIcon:hover{background:rgba(255,255,255,.12);color:#fff;}
+  .panelHeaderLeadIcon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   .panelHeaderTools{
     margin-left:auto;
     display:flex;
@@ -256,15 +270,15 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    width:26px;
-    height:26px;
+    width:30px;
+    height:30px;
     border-radius:4px;
     color:#c3ccdb;
     cursor:pointer;
     text-decoration:none;
   }
   .panelHeaderTools a:hover{background:rgba(255,255,255,.12);color:#fff;}
-  .panelHeaderTools svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .panelHeaderTools svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   .panelHeaderSample{
     width:auto!important;
     padding:0 8px;
@@ -384,7 +398,7 @@
 
   .midPanel{
     flex:none;
-    width:190px;
+    width:215px;
     padding:14px 12px;
     display:flex;
     flex-direction:column;
@@ -426,11 +440,13 @@
   .midHalf:hover{background:linear-gradient(var(--btn-top),var(--btn-hover-bottom));}
   .midHalf svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 
-  .midOptions{align-items:center;justify-content:space-between;flex-wrap:wrap;row-gap:6px;}
+  .midOptions{align-items:center;justify-content:space-between;flex-wrap:nowrap;}
   .autoUpdateLabel{
     display:flex;
     align-items:center;
-    gap:5px;
+    gap:4px;
+    flex:none;
+    white-space:nowrap;
     font-size:12px;
     color:var(--text);
     cursor:pointer;
@@ -719,6 +735,8 @@
     <div class="split">
       <div class="editorWrap">
         <div class="panelHeader">
+          <a id="btnFormatInPlace" title="Format" class="panelHeaderLeadIcon"><svg viewBox="0 0 24 24"><path d="M3.75 6.75h16.5M3.75 12h10.5m-10.5 5.25h7.5"/></svg></a>
+          <a id="btnCompressInPlace" title="Compress" class="panelHeaderLeadIcon"><svg viewBox="0 0 24 24"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg></a>
           <svg class="panelHeaderIcon" viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
           <span>Source</span>
           <span class="panelHeaderTools">
@@ -1063,19 +1081,54 @@
     try{ navigator.clipboard.writeText(elInput.value); }catch(e){}
   });
   var elIndentSize = document.getElementById('indentSize');
+  function beautifyString(text){
+    if (typeof html_beautify !== 'function') throw new Error('Formatter did not load - try again in a moment.');
+    var sizeVal = elIndentSize.value;
+    var opts = { wrap_line_length: 0 };
+    if (sizeVal === 'tab'){ opts.indent_with_tabs = true; opts.indent_size = 1; }
+    else { opts.indent_size = parseInt(sizeVal, 10) || 2; }
+    return html_beautify(text, opts);
+  }
+  function minifyString(text){
+    return text
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/>\s+</g, '><')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
   function doBeautify(){
     if (!elInput.value.trim()){ setError('Nothing to beautify - paste some HTML first.'); return; }
     try{
-      if (typeof html_beautify !== 'function'){ setError('Formatter did not load - try again in a moment.'); return; }
-      var sizeVal = elIndentSize.value;
-      var opts = { wrap_line_length: 0 };
-      if (sizeVal === 'tab'){ opts.indent_with_tabs = true; opts.indent_size = 1; }
-      else { opts.indent_size = parseInt(sizeVal, 10) || 2; }
       setError(null);
-      showOutputText(html_beautify(elInput.value, opts));
+      showOutputText(beautifyString(elInput.value));
     }catch(e){ setError('Could not format that HTML - ' + e.message); }
   }
   document.getElementById('btnFormat').addEventListener('click', doBeautify);
+
+  // Header icons that rewrite the source box itself in place (unlike
+  // Beautify/Minify in the middle panel, which leave the source untouched
+  // and show their result on the right).
+  document.getElementById('btnFormatInPlace').addEventListener('click', function(){
+    if (!elInput.value.trim()){ setError('Nothing to format - paste some HTML first.'); return; }
+    try{
+      elInput.value = beautifyString(elInput.value);
+      setError(null);
+      syncLineNumbers(elInput, elInputLineNumbers);
+      updateStatus(elInput, elInputPos, elInputSize);
+      renderPreview();
+    }catch(e){ setError('Could not format that HTML - ' + e.message); }
+  });
+  document.getElementById('btnCompressInPlace').addEventListener('click', function(){
+    if (!elInput.value.trim()){ setError('Nothing to compress - paste some HTML first.'); return; }
+    try{
+      elInput.value = minifyString(elInput.value);
+      setError(null);
+      syncLineNumbers(elInput, elInputLineNumbers);
+      updateStatus(elInput, elInputPos, elInputSize);
+      renderPreview();
+    }catch(e){ setError('Could not compress that HTML - ' + e.message); }
+  });
+
   document.getElementById('btnRun').addEventListener('click', function(){
     renderPreview();
   });
@@ -1085,13 +1138,8 @@
   document.getElementById('btnMinify').addEventListener('click', function(){
     if (!elInput.value.trim()){ setError('Nothing to minify - paste some HTML first.'); return; }
     try{
-      var minified = elInput.value
-        .replace(/<!--[\s\S]*?-->/g, '')
-        .replace(/>\s+</g, '><')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
       setError(null);
-      showOutputText(minified);
+      showOutputText(minifyString(elInput.value));
     }catch(e){ setError('Could not minify that HTML - ' + e.message); }
   });
   document.getElementById('btnClear').addEventListener('click', function(){
