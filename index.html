@@ -653,6 +653,10 @@
             <option value="4">4 Space</option>
             <option value="5">5 Space</option>
             <option value="6">6 Space</option>
+            <option value="7">7 Space</option>
+            <option value="8">8 Space</option>
+            <option value="9">9 Space</option>
+            <option value="10">10 Space</option>
           </select>
         </div>
         <button type="button" id="btnFormat" class="midBtn primary"><svg viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg> Beautify HTML</button>
@@ -865,7 +869,7 @@
     try{ navigator.clipboard.writeText(elInput.value); }catch(e){}
   });
   var elIndentSize = document.getElementById('indentSize');
-  document.getElementById('btnFormat').addEventListener('click', function(){
+  function doBeautify(){
     if (!elInput.value.trim()){ setError('Nothing to beautify - paste some HTML first.'); return; }
     try{
       if (typeof html_beautify !== 'function'){ setError('Formatter did not load - try again in a moment.'); return; }
@@ -876,10 +880,14 @@
       setError(null);
       showOutputText(html_beautify(elInput.value, opts));
     }catch(e){ setError('Could not format that HTML - ' + e.message); }
-  });
+  }
+  document.getElementById('btnFormat').addEventListener('click', doBeautify);
   document.getElementById('btnRun').addEventListener('click', function(){
     renderPreview();
   });
+  // Changing the indent-size dropdown re-runs Beautify immediately, so you
+  // can compare indent widths without clicking the button again each time.
+  elIndentSize.addEventListener('change', doBeautify);
   document.getElementById('btnMinify').addEventListener('click', function(){
     if (!elInput.value.trim()){ setError('Nothing to minify - paste some HTML first.'); return; }
     try{
