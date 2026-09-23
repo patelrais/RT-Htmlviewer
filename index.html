@@ -117,6 +117,11 @@
   }
 
   *{box-sizing:border-box;}
+  /* Guarantee the hidden attribute always collapses an element, no matter
+     what display value any other rule on this page gives it. Author rules
+     otherwise beat the browser's own [hidden]{display:none} by origin,
+     regardless of specificity - this bit us three separate times below. */
+  [hidden]{display:none!important;}
   html,body{height:100%;}
   body{
     margin:0;
@@ -260,6 +265,42 @@
     .editorWrap{max-height:50vh;border-right:none;border-bottom:1px solid var(--border);}
   }
 
+  .panelHeader{
+    flex:none;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 12px;
+    background:linear-gradient(#3a4150,#282e3a);
+    color:#e7ebf1;
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:.02em;
+  }
+  .panelHeaderIcon{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:#9fb0c9;}
+
+  .codeArea{
+    flex:1;
+    min-height:0;
+    display:flex;
+    overflow:hidden;
+  }
+  .lineNumbers{
+    flex:none;
+    width:40px;
+    overflow:hidden;
+    padding:12px 6px 12px 0;
+    text-align:right;
+    font-family:Consolas,'Courier New',monospace;
+    font-size:14px;
+    line-height:20px;
+    color:var(--muted);
+    background:var(--toolbar-bg);
+    border-right:1px solid var(--border);
+    white-space:pre;
+    user-select:none;
+  }
+
   .colResizer{
     flex:none;
     width:6px;
@@ -286,14 +327,15 @@
   }
 
   #input{
-    width:100%;
     flex:1;
+    min-width:0;
     min-height:200px;
     border:none;
     outline:none;
     resize:none;
     font-family:Consolas,'Courier New',monospace;
     font-size:14px;
+    line-height:20px;
     padding:12px;
     background:var(--panel);
     color:var(--text);
@@ -419,6 +461,13 @@
     flex:1 1 50%;
     min-width:0;
     min-height:0;
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+  }
+  .previewBody{
+    flex:1;
+    min-height:0;
     position:relative;
     background:#fff;
   }
@@ -429,8 +478,15 @@
     display:block;
     background:#fff;
   }
-  .outputCode:not([hidden]){
-    width:100%;
+  .outputCodeArea:not([hidden]){
+    position:absolute;
+    inset:0;
+    display:flex;
+  }
+  .outputCodeArea .lineNumbers{background:var(--panel);}
+  #outputCode{
+    flex:1;
+    min-width:0;
     height:100%;
     border:none;
     outline:none;
@@ -439,6 +495,7 @@
     display:block;
     font-family:Consolas,'Courier New',monospace;
     font-size:14px;
+    line-height:20px;
     padding:12px;
     background:var(--panel);
     color:var(--text);
@@ -643,7 +700,14 @@
 
     <div class="split">
       <div class="editorWrap">
-        <textarea id="input" spellcheck="false" placeholder="Paste the HTML code here (your code is not saved anywhere)"></textarea>
+        <div class="panelHeader">
+          <svg class="panelHeaderIcon" viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          <span>Source</span>
+        </div>
+        <div class="codeArea">
+          <div class="lineNumbers" id="inputLineNumbers">1</div>
+          <textarea id="input" spellcheck="false" placeholder="Paste the HTML code here (your code is not saved anywhere)"></textarea>
+        </div>
         <div class="err" id="errBanner"></div>
       </div>
       <div class="colResizer" id="colResizer" title="Drag to resize"></div>
@@ -676,12 +740,21 @@
       </div>
 
       <div class="previewWrap" id="previewWrap">
-        <div class="emptyState" id="emptyState">
-          <p>Nothing to preview yet.</p>
-          <p>Start typing or pasting HTML on the left.</p>
+        <div class="panelHeader">
+          <svg class="panelHeaderIcon" viewBox="0 0 24 24"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Output</span>
         </div>
-        <iframe id="previewFrame" title="HTML preview" sandbox="allow-scripts allow-forms allow-popups allow-modals" hidden></iframe>
-        <textarea id="outputCode" class="outputCode" readonly spellcheck="false" hidden></textarea>
+        <div class="previewBody">
+          <div class="emptyState" id="emptyState">
+            <p>Nothing to preview yet.</p>
+            <p>Start typing or pasting HTML on the left.</p>
+          </div>
+          <iframe id="previewFrame" title="HTML preview" sandbox="allow-scripts allow-forms allow-popups allow-modals" hidden></iframe>
+          <div class="codeArea outputCodeArea" id="outputCodeArea" hidden>
+            <div class="lineNumbers" id="outputLineNumbers">1</div>
+            <textarea id="outputCode" class="outputCode" readonly spellcheck="false"></textarea>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -751,6 +824,26 @@
   var elFrame = document.getElementById('previewFrame');
   var elEmptyState = document.getElementById('emptyState');
   var elOutputCode = document.getElementById('outputCode');
+  var elOutputCodeArea = document.getElementById('outputCodeArea');
+  var elInputLineNumbers = document.getElementById('inputLineNumbers');
+  var elOutputLineNumbers = document.getElementById('outputLineNumbers');
+
+  // ---------- line numbers ----------
+  // A plain <textarea> has no built-in gutter, so this keeps a synced
+  // sibling <div> with one number per line, matched to the textarea's exact
+  // font/line-height, and mirrors its scroll position on scroll.
+  function syncLineNumbers(ta, gutter){
+    var count = ta.value.split('\n').length;
+    var text = '';
+    for (var i = 1; i <= count; i++) text += i + '\n';
+    gutter.textContent = text.slice(0, -1);
+    gutter.scrollTop = ta.scrollTop;
+  }
+  function wireLineNumberSync(ta, gutter){
+    ta.addEventListener('scroll', function(){ gutter.scrollTop = ta.scrollTop; });
+  }
+  wireLineNumberSync(elInput, elInputLineNumbers);
+  wireLineNumberSync(elOutputCode, elOutputLineNumbers);
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"]/g, function(c){
@@ -867,6 +960,7 @@
     if (navigator.clipboard && navigator.clipboard.readText){
       navigator.clipboard.readText().then(function(t){
         elInput.value = t;
+        syncLineNumbers(elInput, elInputLineNumbers);
         renderPreview();
       }, function(){
         showPasteHint();
@@ -912,6 +1006,7 @@
   });
   document.getElementById('btnClear').addEventListener('click', function(){
     elInput.value=''; setError(null); elInput.focus(); renderPreview();
+    syncLineNumbers(elInput, elInputLineNumbers);
   });
 
   var SAMPLE_HTML = [
@@ -936,6 +1031,7 @@
     elInput.value = SAMPLE_HTML;
     setError(null);
     renderPreview();
+    syncLineNumbers(elInput, elInputLineNumbers);
   });
 
   // ---------- upload file ----------
@@ -951,6 +1047,7 @@
       elInput.value = String(reader.result);
       setError(null);
       renderPreview();
+      syncLineNumbers(elInput, elInputLineNumbers);
     };
     reader.onerror = function(){
       setError('Could not read that file.');
@@ -1040,6 +1137,7 @@
           elInput.value = text;
           closeModal();
           renderPreview();
+          syncLineNumbers(elInput, elInputLineNumbers);
         })
         .catch(function(err){
           showModalErr('Could not load that URL - ' + err.message + '. Many servers block cross-origin requests from a page like this.');
@@ -1128,7 +1226,7 @@
   // keeps the raw HTML exactly as typed/pasted - nothing ever rewrites it.
   function showEmpty(){
     elFrame.hidden = true;
-    elOutputCode.hidden = true;
+    elOutputCodeArea.hidden = true;
     elEmptyState.style.display = 'flex';
     elFrame.removeAttribute('srcdoc');
   }
@@ -1137,7 +1235,7 @@
     var text = elInput.value;
     if (!text.trim()){ showEmpty(); return; }
     elEmptyState.style.display = 'none';
-    elOutputCode.hidden = true;
+    elOutputCodeArea.hidden = true;
     elFrame.hidden = false;
     elFrame.srcdoc = text;
   }
@@ -1146,8 +1244,9 @@
     elEmptyState.style.display = 'none';
     elFrame.hidden = true;
     elFrame.removeAttribute('srcdoc');
-    elOutputCode.hidden = false;
+    elOutputCodeArea.hidden = false;
     elOutputCode.value = text;
+    syncLineNumbers(elOutputCode, elOutputLineNumbers);
   }
 
   // Live-updates the preview as the user types, debounced so a fast typist
@@ -1155,11 +1254,13 @@
   var elAutoUpdate = document.getElementById('autoUpdate');
   var inputDebounce;
   elInput.addEventListener('input', function(){
+    syncLineNumbers(elInput, elInputLineNumbers);
     if (!elAutoUpdate.checked) return;
     clearTimeout(inputDebounce);
     inputDebounce = setTimeout(renderPreview, 300);
   });
 
   renderPreview();
+  syncLineNumbers(elInput, elInputLineNumbers);
 })();
 </script>
