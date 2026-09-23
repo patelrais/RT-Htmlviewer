@@ -285,7 +285,7 @@
     .colResizer{display:none;}
   }
 
-  textarea{
+  #input{
     width:100%;
     flex:1;
     min-height:200px;
@@ -299,6 +299,9 @@
     color:var(--text);
     display:block;
   }
+  /* Belt-and-braces: any textarea/iframe with the hidden attribute must
+     collapse out of layout, regardless of what other rules target it. */
+  textarea[hidden], iframe[hidden]{display:none;}
 
   .err{
     display:none;
