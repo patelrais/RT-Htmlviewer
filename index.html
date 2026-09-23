@@ -174,12 +174,24 @@
     user-select:none;
   }
 
+  .aboutLink{
+    margin-left:auto;
+    padding:0 14px;
+    font-size:13px;
+    font-weight:bold;
+    color:var(--tab-text);
+    text-decoration:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+  }
+  .aboutLink:hover{color:var(--link);}
+
   .themeReset{
     display:flex;
     align-items:center;
     font-size:15px;
-    margin-left:auto;
-    padding:0 8px 0 18px;
+    padding:0 8px 0 4px;
     color:var(--muted);
     cursor:pointer;
     user-select:none;
@@ -199,50 +211,6 @@
   .themeToggle svg{width:19px;height:19px;display:block;fill:currentColor;}
   .themeToggle:hover{color:var(--link);}
 
-  .toolbar{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    padding:7px 10px;
-    border-bottom:1px solid var(--border);
-    background:var(--toolbar-bg);
-    flex-wrap:wrap;
-    flex:none;
-  }
-  .toolbar a{
-    color:var(--btn-text);
-    background:linear-gradient(var(--btn-top), var(--btn-bottom));
-    border:none;
-    text-decoration:none;
-    font-size:13px;
-    font-weight:normal;
-    padding:6px;
-    cursor:pointer;
-    border-radius:3px;
-    box-shadow:inset 0 1px 0 var(--btn-shadow-hi), 0 1px 1px var(--btn-shadow-lo);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .toolbar a svg{
-    width:16px;
-    height:16px;
-    display:block;
-    fill:none;
-    stroke:currentColor;
-    stroke-width:1.8;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-  }
-  .toolbar #btnAbout{padding:5px 10px;}
-  .toolbar a:hover{background:linear-gradient(var(--btn-top), var(--btn-hover-bottom));}
-  .toolbar a:active{
-    background:linear-gradient(var(--btn-active-top), var(--btn-active-bottom));
-    box-shadow:inset 0 1px 3px rgba(20,25,35,.25);
-    transform:translateY(1px);
-  }
-  .toolbar .sep{display:none;}
-  .toolbar .right{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
 
   .split{
     display:flex;
@@ -278,6 +246,34 @@
     letter-spacing:.02em;
   }
   .panelHeaderIcon{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:#9fb0c9;}
+  .panelHeaderTools{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .panelHeaderTools a{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;
+    height:26px;
+    border-radius:4px;
+    color:#c3ccdb;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .panelHeaderTools a:hover{background:rgba(255,255,255,.12);color:#fff;}
+  .panelHeaderTools svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .panelHeaderSample{
+    width:auto!important;
+    padding:0 8px;
+    font-style:italic;
+    font-weight:bold;
+    font-size:12px;
+    color:#8fc4ff;
+  }
+  .panelHeaderSample:hover{color:#c3e0ff;background:rgba(255,255,255,.12);}
 
   .codeArea{
     flex:1;
@@ -356,6 +352,35 @@
   }
   .err.show{display:block;}
   .err.info{background:var(--err-info-bg);color:var(--link);border-top-color:var(--err-info-border);}
+
+  .statusBar{
+    flex:none;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:5px 10px;
+    background:var(--toolbar-bg);
+    border-top:1px solid var(--border);
+    font-size:11px;
+    color:var(--muted);
+  }
+  .statusSize{margin-left:auto;}
+  .statusSize strong{color:var(--text);}
+  .fontSizeBtns{display:flex;gap:2px;}
+  .fontSizeBtns a{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:20px;
+    height:20px;
+    border-radius:3px;
+    color:var(--link);
+    font-weight:bold;
+    font-size:11px;
+    cursor:pointer;
+  }
+  .fontSizeBtns a.big{font-size:15px;}
+  .fontSizeBtns a:hover{background:var(--btn-hover-bottom);}
 
   .midPanel{
     flex:none;
@@ -684,31 +709,38 @@
   <div class="app">
     <div class="tabs">
       <div class="titleTab">HTML Viewer</div>
+      <a id="btnAbout" class="aboutLink" title="About">About</a>
       <span class="themeReset" id="themeReset" title="Reset to automatic (follow local time)">&#8635;</span>
       <div class="themeToggle" id="themeToggle" title="Toggle dark mode"><span id="themeIcon">&#9789;</span></div>
       <div class="themeToggle" id="fullscreenToggle" title="Toggle fullscreen"><span id="fullscreenIcon"></span></div>
     </div>
-
-    <div class="toolbar">
-      <a id="btnPaste" title="Paste"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></a>
-      <a id="btnCopy" title="Copy"><svg viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></a>
-      <a id="btnClear" title="Clear"><svg viewBox="0 0 24 24"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></a>
-      <a id="btnSample" title="Sample"><svg viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg></a>
-      <input type="file" id="fileInput" accept=".html,.htm,text/html" hidden>
-      <span class="right">your code is not saved anywhere<span class="sep">|</span><a id="btnAbout" title="About">About</a></span>
-    </div>
+    <input type="file" id="fileInput" accept=".html,.htm,text/html" hidden>
 
     <div class="split">
       <div class="editorWrap">
         <div class="panelHeader">
           <svg class="panelHeaderIcon" viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
           <span>Source</span>
+          <span class="panelHeaderTools">
+            <a id="btnSample" title="Sample" class="panelHeaderSample">Sample</a>
+            <a id="btnPaste" title="Paste"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></a>
+            <a id="btnCopy" title="Copy"><svg viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></a>
+            <a id="btnClear" title="Clear"><svg viewBox="0 0 24 24"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></a>
+          </span>
         </div>
         <div class="codeArea">
           <div class="lineNumbers" id="inputLineNumbers">1</div>
           <textarea id="input" spellcheck="false" placeholder="Paste the HTML code here (your code is not saved anywhere)"></textarea>
         </div>
         <div class="err" id="errBanner"></div>
+        <div class="statusBar">
+          <span id="inputPos">Ln: 1  Col: 1</span>
+          <span class="statusSize">size: <strong id="inputSize">0 B</strong></span>
+          <span class="fontSizeBtns">
+            <a id="btnFontSmaller" title="Decrease font size">T</a>
+            <a id="btnFontLarger" title="Increase font size" class="big">T</a>
+          </span>
+        </div>
       </div>
       <div class="colResizer" id="colResizer" title="Drag to resize"></div>
 
@@ -755,11 +787,17 @@
             <textarea id="outputCode" class="outputCode" readonly spellcheck="false"></textarea>
           </div>
         </div>
+        <div class="statusBar">
+          <span id="outputPos">Ln: 1  Col: 1</span>
+          <span class="statusSize">size: <strong id="outputSize">0 B</strong></span>
+          <span class="fontSizeBtns">
+            <a id="btnFontSmallerOut" title="Decrease font size">T</a>
+            <a id="btnFontLargerOut" title="Increase font size" class="big">T</a>
+          </span>
+        </div>
       </div>
     </div>
   </div>
-
-  <footer>Runs entirely in this page - nothing you paste is sent anywhere. The preview runs in a sandboxed frame with no access to this page or your data.</footer>
 
   <div class="supportBar">
     <span class="heart">&#10084;</span> Support this free tool
@@ -844,6 +882,57 @@
   }
   wireLineNumberSync(elInput, elInputLineNumbers);
   wireLineNumberSync(elOutputCode, elOutputLineNumbers);
+
+  // ---------- status bar: cursor position + byte size ----------
+  function formatSize(bytes){
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+  function byteLength(str){
+    try{ return new Blob([str]).size; }catch(e){ return str.length; }
+  }
+  function updateStatus(ta, posEl, sizeEl){
+    var value = ta.value;
+    var upToCursor = value.slice(0, ta.selectionStart);
+    var lines = upToCursor.split('\n');
+    var line = lines.length;
+    var col = lines[lines.length - 1].length + 1;
+    posEl.textContent = 'Ln: ' + line + '  Col: ' + col;
+    sizeEl.textContent = formatSize(byteLength(value));
+  }
+  function wireStatus(ta, posEl, sizeEl){
+    var handler = function(){ updateStatus(ta, posEl, sizeEl); };
+    ta.addEventListener('input', handler);
+    ta.addEventListener('click', handler);
+    ta.addEventListener('keyup', handler);
+    ta.addEventListener('select', handler);
+    handler();
+  }
+  var elInputPos = document.getElementById('inputPos');
+  var elInputSize = document.getElementById('inputSize');
+  var elOutputPos = document.getElementById('outputPos');
+  var elOutputSize = document.getElementById('outputSize');
+  wireStatus(elInput, elInputPos, elInputSize);
+  wireStatus(elOutputCode, elOutputPos, elOutputSize);
+
+  // ---------- font size controls (T / T buttons) ----------
+  function wireFontSize(smallerBtn, largerBtn, targets){
+    var size = 14;
+    function apply(){
+      targets.forEach(function(el){ el.style.fontSize = size + 'px'; });
+    }
+    document.getElementById(smallerBtn).addEventListener('click', function(){
+      size = Math.max(10, size - 1);
+      apply();
+    });
+    document.getElementById(largerBtn).addEventListener('click', function(){
+      size = Math.min(24, size + 1);
+      apply();
+    });
+  }
+  wireFontSize('btnFontSmaller', 'btnFontLarger', [elInput, elInputLineNumbers]);
+  wireFontSize('btnFontSmallerOut', 'btnFontLargerOut', [elOutputCode, elOutputLineNumbers]);
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"]/g, function(c){
@@ -961,6 +1050,7 @@
       navigator.clipboard.readText().then(function(t){
         elInput.value = t;
         syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
         renderPreview();
       }, function(){
         showPasteHint();
@@ -1007,6 +1097,7 @@
   document.getElementById('btnClear').addEventListener('click', function(){
     elInput.value=''; setError(null); elInput.focus(); renderPreview();
     syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
   });
 
   var SAMPLE_HTML = [
@@ -1032,6 +1123,7 @@
     setError(null);
     renderPreview();
     syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
   });
 
   // ---------- upload file ----------
@@ -1048,6 +1140,7 @@
       setError(null);
       renderPreview();
       syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
     };
     reader.onerror = function(){
       setError('Could not read that file.');
@@ -1138,6 +1231,7 @@
           closeModal();
           renderPreview();
           syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
         })
         .catch(function(err){
           showModalErr('Could not load that URL - ' + err.message + '. Many servers block cross-origin requests from a page like this.');
@@ -1247,6 +1341,7 @@
     elOutputCodeArea.hidden = false;
     elOutputCode.value = text;
     syncLineNumbers(elOutputCode, elOutputLineNumbers);
+    updateStatus(elOutputCode, elOutputPos, elOutputSize);
   }
 
   // Live-updates the preview as the user types, debounced so a fast typist
@@ -1255,6 +1350,7 @@
   var inputDebounce;
   elInput.addEventListener('input', function(){
     syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
     if (!elAutoUpdate.checked) return;
     clearTimeout(inputDebounce);
     inputDebounce = setTimeout(renderPreview, 300);
@@ -1262,5 +1358,6 @@
 
   renderPreview();
   syncLineNumbers(elInput, elInputLineNumbers);
+    updateStatus(elInput, elInputPos, elInputSize);
 })();
 </script>
