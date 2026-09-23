@@ -182,7 +182,6 @@
   }
 
   .aboutLink{
-    margin-left:auto;
     padding:0 14px;
     font-size:13px;
     font-weight:bold;
@@ -193,6 +192,19 @@
     align-items:center;
   }
   .aboutLink:hover{color:var(--link);}
+
+  .toolLink{
+    margin-left:auto;
+    padding:0 14px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--link);
+    text-decoration:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+  }
+  .toolLink:hover{text-decoration:underline;}
 
   .themeReset{
     display:flex;
@@ -782,8 +794,8 @@
   <div class="app">
     <div class="tabs">
       <div class="titleTab">HTML Viewer</div>
+      <a class="toolLink" href="https://jsonviewer.tasqen.com/" target="_blank" rel="noopener">JSON Viewer</a>
       <a id="btnAbout" class="aboutLink" title="About">About</a>
-      <a class="aboutLink" href="https://jsonviewer.tasqen.com/" target="_blank" rel="noopener">JSON Viewer</a>
       <span class="themeReset" id="themeReset" title="Reset to automatic (follow local time)">&#8635;</span>
       <div class="themeToggle" id="themeToggle" title="Toggle dark mode"><span id="themeIcon">&#9789;</span></div>
     </div>
