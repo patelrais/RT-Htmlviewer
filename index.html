@@ -197,7 +197,7 @@
   .toolbar{
     display:flex;
     align-items:center;
-    gap:0;
+    gap:4px;
     padding:7px 10px;
     border-bottom:1px solid var(--border);
     background:var(--toolbar-bg);
@@ -211,11 +211,25 @@
     text-decoration:none;
     font-size:13px;
     font-weight:normal;
-    padding:5px 10px;
+    padding:6px;
     cursor:pointer;
     border-radius:3px;
     box-shadow:inset 0 1px 0 var(--btn-shadow-hi), 0 1px 1px var(--btn-shadow-lo);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
+  .toolbar a svg{
+    width:16px;
+    height:16px;
+    display:block;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .toolbar #btnAbout{padding:5px 10px;}
   .toolbar a:hover{background:linear-gradient(var(--btn-top), var(--btn-hover-bottom));}
   .toolbar a:active{
     background:linear-gradient(var(--btn-active-top), var(--btn-active-bottom));
@@ -502,17 +516,17 @@
     </div>
 
     <div class="toolbar">
-      <a id="btnPaste">Paste</a><span class="sep">|</span>
-      <a id="btnCopy">Copy</a><span class="sep">|</span>
-      <a id="btnFormat">Format</a><span class="sep">|</span>
-      <a id="btnMinify">Remove white space</a><span class="sep">|</span>
-      <a id="btnClear">Clear</a><span class="sep">|</span>
-      <a id="btnSample">Sample</a><span class="sep">|</span>
-      <a id="btnFile">Upload File</a><span class="sep">|</span>
-      <a id="btnSave">Download</a><span class="sep">|</span>
-      <a id="btnLoad">Load HTML data</a>
+      <a id="btnPaste" title="Paste"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></a>
+      <a id="btnCopy" title="Copy"><svg viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></a>
+      <a id="btnFormat" title="Format"><svg viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg></a>
+      <a id="btnMinify" title="Remove white space"><svg viewBox="0 0 24 24"><path d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/></svg></a>
+      <a id="btnClear" title="Clear"><svg viewBox="0 0 24 24"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></a>
+      <a id="btnSample" title="Sample"><svg viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg></a>
+      <a id="btnFile" title="Upload file"><svg viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 7.5m0 0L7.5 12m4.5-4.5v13.5"/></svg></a>
+      <a id="btnSave" title="Download"><svg viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 12m0 0l4.5-4.5M12 12V3"/></svg></a>
+      <a id="btnLoad" title="Load HTML data from a URL"><svg viewBox="0 0 24 24"><path d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg></a>
       <input type="file" id="fileInput" accept=".html,.htm,text/html" hidden>
-      <span class="right">your code is not saved anywhere<span class="sep">|</span><a id="btnAbout">About</a></span>
+      <span class="right">your code is not saved anywhere<span class="sep">|</span><a id="btnAbout" title="About">About</a></span>
     </div>
 
     <div class="split">
