@@ -296,6 +296,54 @@
   }
   .panelHeaderSample:hover{color:#c3e0ff;background:rgba(255,255,255,.12);}
 
+  .findBar{
+    flex:none;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 8px;
+    background:var(--toolbar-bg);
+    border-bottom:1px solid var(--border);
+  }
+  .findBar input[type="text"]{
+    flex:1;
+    min-width:60px;
+    padding:4px 8px;
+    font-family:inherit;
+    font-size:12px;
+    color:var(--text);
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:4px;
+    outline:none;
+  }
+  .findBar input[type="text"]:focus{border-color:var(--link);}
+  .findCount{
+    flex:none;
+    min-width:56px;
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .findNav, .findToggle, .findClose{
+    flex:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:24px;
+    height:24px;
+    border-radius:4px;
+    font-size:12px;
+    font-weight:bold;
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+  }
+  .findNav:hover, .findToggle:hover, .findClose:hover{background:var(--tab-hover);color:var(--text);}
+  .findToggle.active{background:var(--link);color:#fff;}
+  .findClose{font-size:16px;font-weight:normal;}
+
   .codeArea{
     flex:1;
     min-height:0;
@@ -735,9 +783,9 @@
     <div class="tabs">
       <div class="titleTab">HTML Viewer</div>
       <a id="btnAbout" class="aboutLink" title="About">About</a>
+      <a class="aboutLink" href="https://jsonviewer.tasqen.com/" target="_blank" rel="noopener">JSON Viewer</a>
       <span class="themeReset" id="themeReset" title="Reset to automatic (follow local time)">&#8635;</span>
       <div class="themeToggle" id="themeToggle" title="Toggle dark mode"><span id="themeIcon">&#9789;</span></div>
-      <div class="themeToggle" id="fullscreenToggle" title="Toggle fullscreen"><span id="fullscreenIcon"></span></div>
     </div>
     <input type="file" id="fileInput" accept=".html,.htm,text/html" hidden>
 
@@ -755,6 +803,16 @@
             <a id="btnClear" title="Clear"><svg viewBox="0 0 24 24"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></a>
             <a id="fullscreenSource" title="Toggle fullscreen"><span id="fullscreenSourceIcon"></span></a>
           </span>
+        </div>
+        <div class="findBar" id="findBarSource" hidden>
+          <input type="text" id="findInputSource" placeholder="Search for" spellcheck="false">
+          <a id="findPrevSource" class="findNav" title="Previous match">&#8249;</a>
+          <a id="findNextSource" class="findNav" title="Next match">&#8250;</a>
+          <span class="findCount" id="findCountSource">0 of 0</span>
+          <a id="findRegexSource" class="findToggle" title="Use regular expression">.*</a>
+          <a id="findCaseSource" class="findToggle" title="Match case">Aa</a>
+          <a id="findWordSource" class="findToggle" title="Match whole word">\b</a>
+          <a id="findCloseSource" class="findClose" title="Close">&times;</a>
         </div>
         <div class="codeArea">
           <div class="lineNumbers" id="inputLineNumbers">1</div>
@@ -809,6 +867,16 @@
             <a id="btnClearOutput" title="Clear"><svg viewBox="0 0 24 24"><path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></a>
             <a id="fullscreenOutput" title="Toggle fullscreen"><span id="fullscreenOutputIcon"></span></a>
           </span>
+        </div>
+        <div class="findBar" id="findBarOutput" hidden>
+          <input type="text" id="findInputOutput" placeholder="Search for" spellcheck="false">
+          <a id="findPrevOutput" class="findNav" title="Previous match">&#8249;</a>
+          <a id="findNextOutput" class="findNav" title="Next match">&#8250;</a>
+          <span class="findCount" id="findCountOutput">0 of 0</span>
+          <a id="findRegexOutput" class="findToggle" title="Use regular expression">.*</a>
+          <a id="findCaseOutput" class="findToggle" title="Match case">Aa</a>
+          <a id="findWordOutput" class="findToggle" title="Match whole word">\b</a>
+          <a id="findCloseOutput" class="findClose" title="Close">&times;</a>
         </div>
         <div class="previewBody">
           <div class="emptyState" id="emptyState">
@@ -967,6 +1035,151 @@
   }
   wireFontSize('btnFontSmaller', 'btnFontLarger', [elInput, elInputLineNumbers]);
   wireFontSize('btnFontSmallerOut', 'btnFontLargerOut', [elOutputCode, elOutputLineNumbers]);
+
+  // ---------- Ctrl+F find bar ----------
+  function wireFindBar(ids, ta){
+    var bar = document.getElementById(ids.bar);
+    var input = document.getElementById(ids.input);
+    var prevBtn = document.getElementById(ids.prev);
+    var nextBtn = document.getElementById(ids.next);
+    var countEl = document.getElementById(ids.count);
+    var regexBtn = document.getElementById(ids.regex);
+    var caseBtn = document.getElementById(ids.caseSensitive);
+    var wordBtn = document.getElementById(ids.word);
+    var closeBtn = document.getElementById(ids.close);
+
+    var state = { regex:false, caseSensitive:false, wholeWord:false, matches:[], current:-1 };
+
+    function toggle(btn, key){
+      btn.addEventListener('click', function(){
+        state[key] = !state[key];
+        btn.classList.toggle('active', state[key]);
+        recompute(true);
+      });
+    }
+    toggle(regexBtn, 'regex');
+    toggle(caseBtn, 'caseSensitive');
+    toggle(wordBtn, 'wholeWord');
+
+    function buildRegex(){
+      var q = input.value;
+      if (!q) return null;
+      var pattern = state.regex ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (state.wholeWord) pattern = '\\b(?:' + pattern + ')\\b';
+      try{ return new RegExp(pattern, 'g' + (state.caseSensitive ? '' : 'i')); }
+      catch(e){ return null; }
+    }
+
+    function recompute(keepPosition){
+      var re = buildRegex();
+      var prevStart = state.matches[state.current] ? state.matches[state.current][0] : -1;
+      state.matches = [];
+      if (re){
+        var text = ta.value;
+        var m;
+        while ((m = re.exec(text))){
+          state.matches.push([m.index, m.index + m[0].length]);
+          if (m[0].length === 0) re.lastIndex++;
+        }
+      }
+      if (state.matches.length){
+        var pos = keepPosition && prevStart >= 0 ? prevStart : ta.selectionStart;
+        state.current = 0;
+        for (var i=0;i<state.matches.length;i++){
+          if (state.matches[i][0] >= pos){ state.current = i; break; }
+        }
+      } else {
+        state.current = -1;
+      }
+      updateCount();
+      goToCurrent(true);
+    }
+
+    function updateCount(){
+      countEl.textContent = state.matches.length ? (state.current+1) + ' of ' + state.matches.length : '0 of 0';
+    }
+
+    function scrollSelectionIntoView(){
+      var textUpToCaret = ta.value.substring(0, ta.selectionStart);
+      var lineNum = textUpToCaret.split('\n').length - 1;
+      var style = window.getComputedStyle(ta);
+      var lineHeight = parseFloat(style.lineHeight) || 18;
+      var targetY = lineNum * lineHeight;
+      var visibleH = ta.clientHeight;
+      if (targetY < ta.scrollTop || targetY > ta.scrollTop + visibleH - lineHeight){
+        ta.scrollTop = Math.max(0, targetY - visibleH / 2);
+      }
+    }
+
+    function goToCurrent(keepFocusOnInput){
+      if (state.current < 0 || !state.matches[state.current]) return;
+      var range = state.matches[state.current];
+      ta.setSelectionRange(range[0], range[1]);
+      scrollSelectionIntoView();
+      if (!keepFocusOnInput) ta.focus();
+      syncLineNumbers(ta, ta === elInput ? elInputLineNumbers : elOutputLineNumbers);
+    }
+
+    function next(){
+      if (!state.matches.length) return;
+      state.current = (state.current + 1) % state.matches.length;
+      updateCount();
+      goToCurrent(false);
+    }
+    function prevMatch(){
+      if (!state.matches.length) return;
+      state.current = (state.current - 1 + state.matches.length) % state.matches.length;
+      updateCount();
+      goToCurrent(false);
+    }
+
+    input.addEventListener('input', function(){ recompute(false); });
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); if (e.shiftKey) prevMatch(); else next(); }
+      else if (e.key === 'Escape'){ e.preventDefault(); close(); }
+    });
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prevMatch);
+    closeBtn.addEventListener('click', close);
+
+    function open(){
+      bar.hidden = false;
+      input.focus();
+      input.select();
+      recompute(false);
+    }
+    function close(){
+      bar.hidden = true;
+      ta.focus();
+    }
+
+    return { open: open, close: close, isOpen: function(){ return !bar.hidden; } };
+  }
+
+  var findSource = wireFindBar({
+    bar:'findBarSource', input:'findInputSource', prev:'findPrevSource', next:'findNextSource',
+    count:'findCountSource', regex:'findRegexSource', caseSensitive:'findCaseSource',
+    word:'findWordSource', close:'findCloseSource'
+  }, elInput);
+  var findOutput = wireFindBar({
+    bar:'findBarOutput', input:'findInputOutput', prev:'findPrevOutput', next:'findNextOutput',
+    count:'findCountOutput', regex:'findRegexOutput', caseSensitive:'findCaseOutput',
+    word:'findWordOutput', close:'findCloseOutput'
+  }, elOutputCode);
+
+  document.addEventListener('keydown', function(e){
+    if (!(e.ctrlKey || e.metaKey) || (e.key !== 'f' && e.key !== 'F')) return;
+    var active = document.activeElement;
+    if (!document.querySelector('.app').contains(active) && active !== document.body) return;
+    e.preventDefault();
+    if (!elOutputCodeArea.hidden && (active === elOutputCode || elOutputCodeArea.contains(active) || findOutput.isOpen())){
+      findSource.close();
+      findOutput.open();
+    } else {
+      findOutput.close();
+      findSource.open();
+    }
+  });
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"]/g, function(c){
@@ -1275,7 +1488,6 @@
     });
     document.addEventListener('fullscreenchange', updateIcon);
   }
-  wireFullscreenToggle('fullscreenToggle', 'fullscreenIcon', document.querySelector('.app'));
   wireFullscreenToggle('fullscreenSource', 'fullscreenSourceIcon', document.querySelector('.editorWrap'));
   wireFullscreenToggle('fullscreenOutput', 'fullscreenOutputIcon', document.querySelector('.previewWrap'));
 
