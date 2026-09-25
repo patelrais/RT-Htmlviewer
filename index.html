@@ -194,7 +194,6 @@
   .aboutLink:hover{color:var(--link);}
 
   .toolLink{
-    margin-left:auto;
     padding:0 14px;
     font-size:13px;
     font-weight:600;
@@ -204,6 +203,7 @@
     display:flex;
     align-items:center;
   }
+  .toolLink:first-of-type{margin-left:auto;}
   .toolLink:hover{text-decoration:underline;}
 
   .themeReset{
@@ -230,6 +230,14 @@
   .themeToggle svg{width:19px;height:19px;display:block;fill:currentColor;}
   .themeToggle:hover{color:var(--link);}
 
+  @media (max-width:480px){
+    .tabs{flex-wrap:wrap;}
+    .titleTab{flex:1 0 100%;}
+    .toolLink:first-of-type{margin-left:0;}
+    .toolLink, .aboutLink{padding:6px 8px;font-size:12px;}
+    .themeToggle{padding:0 10px;}
+    .themeReset{padding:0 4px;}
+  }
 
   .split{
     display:flex;
@@ -795,6 +803,7 @@
     <div class="tabs">
       <div class="titleTab">HTML Viewer</div>
       <a class="toolLink" href="https://jsonviewer.tasqen.com/" target="_blank" rel="noopener">JSON Viewer</a>
+      <a class="toolLink" href="https://password.tasqen.com/" target="_blank" rel="noopener">Password Generator</a>
       <a id="btnAbout" class="aboutLink" title="About">About</a>
       <span class="themeReset" id="themeReset" title="Reset to automatic (follow local time)">&#8635;</span>
       <div class="themeToggle" id="themeToggle" title="Toggle dark mode"><span id="themeIcon">&#9789;</span></div>
